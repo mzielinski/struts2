@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <bean name="customerService" type="com.mzielinski.struts2.services.CustomerService"
+          class="com.mzielinski.struts2.services.CustomerServiceImpl" />
+
+    <constant name="struts.enable.DynamicMethodInvocation" value="false"/>
+    <constant name="struts.devMode" value="false"/>
+    <constant name="struts.custom.i18n.resources" value="ApplicationResources"/>
+
+    <package name="default" extends="struts-default" namespace="/">
+
+        <result-types>
+            <result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
+        </result-types>
+
+        <!-- Interceptors -->
+        <interceptors>
+            <interceptor name="mylogging" class="com.mzielinski.struts2.interceptors.MyLoggingInterceptor">
+            </interceptor>
+            <interceptor-stack name="loggingStack">
+                <interceptor-ref name="mylogging" />
+                <interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="loggingStack"/>
+
+        <!-- Actions -->
+        <action name="login" class="com.mzielinski.struts2.view.LoginAction">
+            <interceptor-ref name="loggingStack"/>
+            <result name="success" type="tiles">/welcome.tiles</result>
+            <result name="error">index.jsp</result>
+        </action>
+        <action name="image-form" class="com.mzielinski.struts2.view.FileUploadAction">
+            <interceptor-ref name="fileUpload">
+                <param name="maximumSize">2097152</param>
+                <param name="allowedTypes">image/png,image/gif,image/jpeg,image/pjpeg</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack"/>
+            <result name="success" type="tiles">/image.success.tiles</result>
+            <result name="input" type="tiles">/image.tiles</result>
+        </action>
+        <action name="ajax-demo" class="com.mzielinski.struts2.view.AjaxAutoCompleteAction">
+            <interceptor-ref name="loggingStack"/>
+            <result name="success" type="tiles">/ajaxdemo.tiles</result>
+            <result type="tiles">/ajaxdemo.tiles</result>
+        </action>
+        <action name="customer-show" class="com.mzielinski.struts2.view.CustomerAction" method="show">
+            <result name="success" type="chain">customer-manager</result>
+            <result name="input" type="chain">customer-manager</result>
+        </action>
+        <action name="customer-add" class="com.mzielinski.struts2.view.CustomerAction" method="add">
+            <result name="success" type="chain">customer-manager</result>
+            <result name="input" type="chain">customer-manager</result>
+        </action>
+        <action name="customer-delete" class="com.mzielinski.struts2.view.CustomerAction" method="delete">
+            <result name="success" type="chain">customer-manager</result>
+        </action>
+        <action name="customer-manager" class="com.mzielinski.struts2.view.CustomerAction">
+            <result name="success" type="tiles">/customer.manager.tiles</result>
+            <result name="input" type="tiles">/customer.manager.tiles</result>
+        </action>
+    </package>
+
+
+</struts>
